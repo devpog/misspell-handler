@@ -22,7 +22,7 @@ def generate_word(word):
     select_from = ''.join(set(string.ascii_letters) - set(word))
     return ''.join(random.choice(select_from) for _ in range(len(word))).lower()
 
-# A word that we won't to train model on
+# A word that we want to train our model on
 word = 'elucidate'
 
 # Create features from all possible permutations and also create target label
