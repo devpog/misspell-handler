@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import numpy as np
 
@@ -24,6 +26,7 @@ def generate_word(word):
 
 # A word that we want to train our model on
 word = 'elucidate'
+# word = 'donghuang'
 
 # Create features from all possible permutations and also create target label
 X = [''.join(p) for p in list(permutations(word, len(word)))]
@@ -41,13 +44,13 @@ X_train_count = vec.fit_transform(X)
 
 # Transform the bag into TF-IDF
 tfidf = TfidfTransformer(use_idf=True).fit(X_train_count)
-X_train_tfidf = tfidf.fit_transform(X_train_count)
+X_train_tfidf = tfidf.fit_transform(X_train_count),
 
 # Train the model
 clf = LogisticRegressionCV().fit(X_train_tfidf, y)
 
 # Predict new
-docs_new = ['alucidyte', 'elucidite', 'elusive', 'modern', 'account']
+docs_new = ['alucidyte', 'elucidite', 'elusive', 'lucrative', 'account']
 X_new_counts = vec.transform(docs_new)
 X_new_tfidf = tfidf.transform(X_new_counts)
 predicted = clf.predict(X_new_tfidf)
