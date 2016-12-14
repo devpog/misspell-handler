@@ -44,7 +44,7 @@ X_train_count = vec.fit_transform(X)
 
 # Transform the bag into TF-IDF
 tfidf = TfidfTransformer(use_idf=True).fit(X_train_count)
-X_train_tfidf = tfidf.fit_transform(X_train_count),
+X_train_tfidf = tfidf.fit_transform(X_train_count)
 
 # Train the model
 clf = LogisticRegressionCV().fit(X_train_tfidf, y)
