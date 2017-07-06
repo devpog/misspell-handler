@@ -12,6 +12,7 @@ from sklearn.linear_model import LogisticRegressionCV
 
 from sklearn.pipeline import Pipeline
 
+import pickle
 
 
 def generate_word(word):
@@ -23,29 +24,52 @@ def generate_word(word):
     select_from = ''.join(set(string.ascii_letters) - set(word))
     return ''.join(random.choice(select_from) for _ in range(len(word))).lower()
 
+model_save = False
+model_retrieve = True
+
+model_filename = 'clf_model.sav'
+vec_filename = 'vec_model.sav'
+tfidf_filename = 'tfidf_model.sav'
+
 # A word that we want to train our model on
 word = 'elucidate'
 
-# Create features from all possible permutations and also create target label
-X = [''.join(p) for p in list(permutations(word, len(word)))]
-y = [word for e in range(len(X))]
+# Either train or retrieve model
+if model_retrieve:
+    vec = pickle.load(open(vec_filename, 'rb'))
+    tfidf = pickle.load(open(tfidf_filename, 'rb'))
+    clf = pickle.load(open(model_filename, 'rb'))
 
-# Add random words generated in a way to exclude characters used in the original word
-# also label them as 'unknown'. The noise will account for X% of the permutations
-for i in range(round(len(X)*.50)):
-    X.append(generate_word(word))
-    y.append('unknown')
+else:
+    # Create features from all possible permutations and also create target label
+    X = [''.join(p) for p in list(permutations(word, len(word)))]
+    y = [word for e in range(len(X))]
 
-# Get bag-of-words
-vec = CountVectorizer(analyzer='char')
-X_train_count = vec.fit_transform(X)
+    # Add random words generated in a way to exclude characters used in the original word
+    # also label them as 'unknown'. The noise will account for X% of the permutations
+    for i in range(round(len(X)*.50)):
+        X.append(generate_word(word))
+        y.append('unknown')
 
-# Transform the bag into TF-IDF
-tfidf = TfidfTransformer(use_idf=True).fit(X_train_count)
-X_train_tfidf = tfidf.fit_transform(X_train_count)
+    print(sorted(X))
 
-# Train the model
-clf = LogisticRegressionCV().fit(X_train_tfidf, y)
+    # Get bag-of-words
+    vec = CountVectorizer(analyzer='char')
+    X_train_count = vec.fit_transform(X)
+
+    # Transform the bag into TF-IDF
+    tfidf = TfidfTransformer(use_idf=True).fit(X_train_count)
+    X_train_tfidf = tfidf.fit_transform(X_train_count)
+
+    # Train the model or retrieve
+    clf = LogisticRegressionCV().fit(X_train_tfidf, y)
+
+
+# save the model to disk, if necessary
+if not model_retrieve:
+    pickle.dump(clf, open(model_filename, 'wb'))
+    pickle.dump(vec, open(vec_filename, 'wb'))
+    pickle.dump(tfidf, open(tfidf_filename, 'wb'))
 
 # Predict new
 docs_new = ['alucidyte', 'elucidite', 'elusive', 'elusivade', 'lucrative', 'account']
