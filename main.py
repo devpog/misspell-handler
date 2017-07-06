@@ -12,7 +12,6 @@ from sklearn.linear_model import LogisticRegressionCV
 
 from sklearn.pipeline import Pipeline
 
-#text_clf = Pipeline([('vect', CountVectorizer()), ('tfidf', TfidfTransformer()), ('lrcv', LogisticRegressionCV())])
 
 
 def generate_word(word):
@@ -26,7 +25,6 @@ def generate_word(word):
 
 # A word that we want to train our model on
 word = 'elucidate'
-# word = 'donghuang'
 
 # Create features from all possible permutations and also create target label
 X = [''.join(p) for p in list(permutations(word, len(word)))]
@@ -50,8 +48,9 @@ X_train_tfidf = tfidf.fit_transform(X_train_count)
 clf = LogisticRegressionCV().fit(X_train_tfidf, y)
 
 # Predict new
-docs_new = ['alucidyte', 'elucidite', 'elusive', 'lucrative', 'account']
+docs_new = ['alucidyte', 'elucidite', 'elusive', 'elusivade', 'lucrative', 'account']
 X_new_counts = vec.transform(docs_new)
+
 X_new_tfidf = tfidf.transform(X_new_counts)
 predicted = clf.predict(X_new_tfidf)
 
